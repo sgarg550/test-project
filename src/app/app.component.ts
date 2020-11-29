@@ -2,7 +2,6 @@ import { Component, OnInit} from '@angular/core';
 import {FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
-
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html'
@@ -11,6 +10,7 @@ export class AppComponent implements OnInit{
   private _users: User[];
   public testForm: FormGroup;
   submitted = false;
+  showAdd = true;
   message: string;
   name: string;
   family: string;
@@ -30,6 +30,8 @@ export class AppComponent implements OnInit{
         family: [null, Validators.compose([Validators.required])],
         birthday: [null, Validators.compose([Validators.required])],
         itemNum: [null, Validators.compose([Validators.required])],
+        mode: [null],
+        editIndex: [null]
       });
   }
 
@@ -38,50 +40,61 @@ export class AppComponent implements OnInit{
 
   get f(): any { return this.testForm.controls; }
 
+  // onSubmit(): void {
+  //   this.submitted = true;
+  //   // stop here if form is invalid
+  //   if (this.testForm.invalid) {
+  //     return;
+  //   } else{
+  //     const formValue = this.testForm.getRawValue();
+  //     this._users.push(new User(formValue.name, formValue.family, formValue.itemNum, formValue.birthday));
+  //     this.testForm.reset();
+  //     this.modalService.dismissAll();
+  //   }
+  // }
+
   onSubmit(): void {
     this.submitted = true;
     // stop here if form is invalid
     if (this.testForm.invalid) {
       return;
-    } else{
+    } else {
+      this.modalService.dismissAll();
       const formValue = this.testForm.getRawValue();
-      this._users.push(new User(formValue.name, formValue.family, formValue.itemNum, formValue.birthday));
+      if (formValue.mode === 'add') {
+        this.users.push(new User(formValue.name, formValue.family, formValue.itemNum, formValue.birthday));
+      } else {
+        this.users.splice(formValue.editIndex, 1, new User(formValue.name, formValue.family, formValue.itemNum, formValue.birthday));
+      }
+      this.testForm.reset();
     }
+  }
+
+  open(content, mode, index) {
+    this.testForm.patchValue({mode: mode});
+    this.showAdd = (mode === 'edit' ? false : true);
+    this.modalService.open(content, {centered: true, backdrop: 'static'});
+    if (mode === 'edit') {
+      const data = this.users[index];
+      const date: string[] = data.birthday.split('-');
+      const birthDate: LocalDate = {day: +date[2], month: +date[1], year: +date[0]};
+      this.testForm.patchValue({
+        name: data.name,
+        family: data.family,
+        itemNum: data.itemNum,
+        birthday: birthDate,
+        editIndex: index
+      });
+    }
+
   }
 
   get users(): User[] {
     return this._users;
   }
 
-  delete(index: number) {
-    this._users.splice(index, 1);
-  }
-
-  open(content, mode, data) {
-    console.log(data);
-    this.modalService.open(content, {centered: true, backdrop: 'static'}).result.then((mode) => {
-      this.message =  `${mode === 'edit' ? 'Edited' : 'Added'} successfully`;
-    }, (reason) => {
-      this.message = `Cancelled`;
-    });
-  }
-
-  setEditUser(index: number): void {
-    this.editingIndex = index;
-    this.name = this._users[index].name;
-    this.family = this._users[index].family;
-  }
-
-  edit(): void {
-    this._users[this.editingIndex] = new User(this.name, this.family);
-    this.editingIndex = undefined;
-    this.name = "";
-    this.family = "";
-  }
-
-  add(): void {
-    this._users.push(new User(this.name, this.family));
-
+  delete(index: number): any {
+    this.users.splice(index, 1);
   }
 }
 

@@ -26,8 +26,8 @@
           <td>{{user.itemNum}}</td>
           <td>{{user.birthday}}</td>
           <td>
-            <input (click)="delete(i)" type="button" value="Delete" />
-            <input (click)="open(content, 'edit', users.indexOf(i))" type="button"  value="Edit" />
+            <input (click)="delete(i)" type="button" value="Delete" />&nbsp;
+            <input (click)="open(content, 'edit', i)" type="button"  value="Edit" />
           </td>
         </tr>
         </tbody>
@@ -35,18 +35,18 @@
     </ng-container>
   </fieldset>
 
-  <button class="btn btn-lg btn-outline-primary" (click)="open(content, 'add', {})">Add</button>
+  <button class="btn btn-lg btn-outline-primary" (click)="open(content, 'add', -1)">Add</button>
 </div>
 
 <ng-template #content let-modal>
+  <form [formGroup]="testForm" (ngSubmit)="onSubmit()">
   <div class="modal-header">
-    <h4 class="modal-title" id="modal-add-edit">Add/Edit</h4>
-    <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+    <h4 class="modal-title" id="modal-add-edit">{{showAdd ? 'Add' : 'Edit'}}</h4>
+    <button type="button" class="close" aria-label="Close" (click)="testForm.reset(); modal.dismiss('Cross click');">
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
   <div class="modal-body">
-    <form [formGroup]="testForm" (ngSubmit)="onSubmit()">
       <div class="form-group">
         <label for="name">Name</label>
         <div class="input-group">
@@ -77,15 +77,20 @@
       <div class="form-group">
         <label for="birthday">Date of birth</label>
         <div class="input-group">
-          <input id="birthday" formControlName="birthday" class="form-control" placeholder="yyyy-mm-dd" name="dp" ngbDatepicker #dp="ngbDatepicker">
+          <input id="birthday" formControlName="birthday" class="form-control" placeholder="yyyy-mm-dd" ngbDatepicker #dp="ngbDatepicker">
+          <div *ngIf="submitted && f.birthday.errors" class="invalid-feedback">
+            <div *ngIf="f.birthday.errors.required">Birthday is required</div>
+          </div>
           <div class="input-group-append">
             <button class="btn btn-outline-secondary calendar" (click)="dp.toggle()" type="button"></button>
           </div>
         </div>
       </div>
-    </form>
   </div>
   <div class="modal-footer">
-    <button type="submit" class="btn btn-outline-dark" (click)="modal.close('Save click')">Save</button>
+    <input type="hidden" formControlName="mode" />
+    <input type="hidden" formControlName="editIndex" />
+    <button type="submit" class="btn btn-outline-dark">Save</button>
   </div>
+</form>
 </ng-template>
