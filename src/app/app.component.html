@@ -1,0 +1,91 @@
+<div class="container">
+  <fieldset>
+    <legend>Read/Show</legend>
+    <p> Search :
+      <input type="text" />
+    </p>
+    <br/>
+
+    <ng-container *ngIf="users">
+      <table class="table table-striped">
+        <thead>
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">Name</th>
+          <th scope="col">Family</th>
+          <th scope="col">Items</th>
+          <th scope="col">Birthday</th>
+          <th scope="col">Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let user of users; index as i">
+          <td>{{i}}</td>
+          <td>{{user.name}}</td>
+          <td>{{user.family}}</td>
+          <td>{{user.itemNum}}</td>
+          <td>{{user.birthday}}</td>
+          <td>
+            <input (click)="delete(i)" type="button" value="Delete" />
+            <input (click)="open(content, 'edit', users.indexOf(i))" type="button"  value="Edit" />
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </ng-container>
+  </fieldset>
+
+  <button class="btn btn-lg btn-outline-primary" (click)="open(content, 'add', {})">Add</button>
+</div>
+
+<ng-template #content let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-add-edit">Add/Edit</h4>
+    <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <form [formGroup]="testForm" (ngSubmit)="onSubmit()">
+      <div class="form-group">
+        <label for="name">Name</label>
+        <div class="input-group">
+          <input type="text" id="name" formControlName="name" class="form-control" placeholder="name" [ngClass]="{ 'is-invalid': submitted && f.name.errors }">
+          <div *ngIf="submitted && f.name.errors" class="invalid-feedback">
+            <div *ngIf="f.name.errors.required">Name is required</div>
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="family">Family</label>
+        <div class="input-group">
+          <input type="text" id="family" formControlName="family" class="form-control" placeholder="family" [ngClass]="{ 'is-invalid': submitted && f.family.errors }">
+          <div *ngIf="submitted && f.family.errors" class="invalid-feedback">
+            <div *ngIf="f.family.errors.required">Family is required</div>
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="itemNum">Items</label>
+        <div class="input-group">
+          <input type="number" id="itemNum" formControlName="itemNum" class="form-control" placeholder="items" [ngClass]="{ 'is-invalid': submitted && f.itemNum.errors }">
+          <div *ngIf="submitted && f.itemNum.errors" class="invalid-feedback">
+            <div *ngIf="f.itemNum.errors.required">Items is required</div>
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="birthday">Date of birth</label>
+        <div class="input-group">
+          <input id="birthday" formControlName="birthday" class="form-control" placeholder="yyyy-mm-dd" name="dp" ngbDatepicker #dp="ngbDatepicker">
+          <div class="input-group-append">
+            <button class="btn btn-outline-secondary calendar" (click)="dp.toggle()" type="button"></button>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button type="submit" class="btn btn-outline-dark" (click)="modal.close('Save click')">Save</button>
+  </div>
+</ng-template>
