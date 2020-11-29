@@ -40,19 +40,6 @@ export class AppComponent implements OnInit{
 
   get f(): any { return this.testForm.controls; }
 
-  // onSubmit(): void {
-  //   this.submitted = true;
-  //   // stop here if form is invalid
-  //   if (this.testForm.invalid) {
-  //     return;
-  //   } else{
-  //     const formValue = this.testForm.getRawValue();
-  //     this._users.push(new User(formValue.name, formValue.family, formValue.itemNum, formValue.birthday));
-  //     this.testForm.reset();
-  //     this.modalService.dismissAll();
-  //   }
-  // }
-
   onSubmit(): void {
     this.submitted = true;
     // stop here if form is invalid
