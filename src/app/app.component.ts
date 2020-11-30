@@ -46,18 +46,19 @@ export class AppComponent implements OnInit{
     if (this.testForm.invalid) {
       return;
     } else {
-      this.modalService.dismissAll();
       const formValue = this.testForm.getRawValue();
       if (formValue.mode === 'add') {
         this.users.push(new User(formValue.name, formValue.family, formValue.itemNum, formValue.birthday));
       } else {
         this.users.splice(formValue.editIndex, 1, new User(formValue.name, formValue.family, formValue.itemNum, formValue.birthday));
       }
+      this.modalService.dismissAll();
       this.testForm.reset();
+      this.submitted = false;
     }
   }
 
-  open(content, mode, index) {
+  open(content, mode, index): any {
     this.testForm.patchValue({mode: mode});
     this.showAdd = (mode === 'edit' ? false : true);
     this.modalService.open(content, {centered: true, backdrop: 'static'});

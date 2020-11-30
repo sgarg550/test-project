@@ -30,6 +30,9 @@
             <input (click)="open(content, 'edit', i)" type="button"  value="Edit" />
           </td>
         </tr>
+        <tr>
+          <td *ngIf="users.length ==0" colspan="6">No Rows Found</td>
+        </tr>
         </tbody>
       </table>
     </ng-container>
